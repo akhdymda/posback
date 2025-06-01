@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from routers import products, transactions
 from core.config import engine, Base, get_db # Baseはテーブル作成時に使用
 from models import product, transaction_header, transaction_detail # テーブル作成時にインポート
 from sqlalchemy.orm import Session
+import os
 
 # テーブル作成（初回実行時などにコメントを外して実行）
 # Base.metadata.create_all(bind=engine) # app.pyでのcreate_allは重複の可能性があるので一旦コメントアウト (core.config.pyにもあるため)
@@ -15,13 +16,37 @@ app = FastAPI(
     version="0.1.0"
 )
 
+# 許可するドメインリスト
+# 環境変数から取得するか、デフォルト値を使用
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "https://app-step4-27.azurewebsites.net,http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],  # 必要なHTTPメソッドのみ許可
+    allow_headers=["Content-Type", "Authorization"],  # 必要なヘッダーのみ許可
 )
+
+# セキュリティヘッダーを追加するミドルウェア
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = "default-src 'self'"
+    return response
+
+# レート制限を実装するミドルウェア
+@app.middleware("http")
+async def rate_limiter(request: Request, call_next):
+    # 本来はIPアドレスごとにリクエスト数を追跡し、
+    # 短時間に多数のリクエストがあった場合は429エラーを返すべきです
+    # 簡易的な実装のため、ここでは常に許可します
+    response = await call_next(request)
+    return response
 
 app.include_router(products.router, prefix="/api", tags=["Products"])
 app.include_router(transactions.router, prefix="/api", tags=["Transactions"])
