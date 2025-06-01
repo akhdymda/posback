@@ -15,13 +15,13 @@ load_dotenv(dotenv_path=env_path)
 
 # データベース接続情報
 DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASS')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 
 # SSL証明書のパス
-ssl_cert = str(base_path / 'DigiCertGlobalRootG2.crt.pem')
+ssl_cert = str(base_path / 'CombinedCACert.crt.pem')
 
 # MySQLのURL構築
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
