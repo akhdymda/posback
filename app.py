@@ -22,31 +22,31 @@ ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "https://app-step4-27.azurew
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST"],  # 必要なHTTPメソッドのみ許可
     allow_headers=["Content-Type", "Authorization"],  # 必要なヘッダーのみ許可
 )
 
 # セキュリティヘッダーを追加するミドルウェア
-@app.middleware("http")
-async def add_security_headers(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    response.headers["Content-Security-Policy"] = "default-src 'self'"
-    return response
+#@app.middleware("http")
+#async def add_security_headers(request: Request, call_next):
+#    response = await call_next(request)
+#    response.headers["X-Content-Type-Options"] = "nosniff"
+#    response.headers["X-Frame-Options"] = "DENY"
+#    response.headers["X-XSS-Protection"] = "1; mode=block"
+#    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+#    response.headers["Content-Security-Policy"] = "default-src 'self'"
+#    return response
 
 # レート制限を実装するミドルウェア
-@app.middleware("http")
-async def rate_limiter(request: Request, call_next):
+#@app.middleware("http")
+#async def rate_limiter(request: Request, call_next):
     # 本来はIPアドレスごとにリクエスト数を追跡し、
     # 短時間に多数のリクエストがあった場合は429エラーを返すべきです
     # 簡易的な実装のため、ここでは常に許可します
-    response = await call_next(request)
-    return response
+    #response = await call_next(request)
+    #return response
 
 app.include_router(products.router, prefix="/api", tags=["Products"])
 app.include_router(transactions.router, prefix="/api", tags=["Transactions"])

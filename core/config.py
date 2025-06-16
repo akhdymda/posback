@@ -20,27 +20,43 @@ DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 
-# SSL証明書のパス
-ssl_cert = str(base_path / 'CombinedCACert.crt.pem')
-
 # MySQLのURL構築
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-# エンジンの作成（SSL設定を追加）
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={
-        "ssl": {
-            "ssl_ca": ssl_cert
-        }  
-    },
-    echo=False,  # SQLログを無効化（本番環境用）
-    pool_pre_ping=True,
-    pool_recycle=3600,
-    pool_size=10,  # 同時接続数を制限
-    max_overflow=20,  # 最大オーバーフロー接続数
-    pool_timeout=30  # 接続タイムアウト
-)
+# ローカル環境かどうかを判定
+is_local = DB_HOST in ['localhost', '127.0.0.1'] or (DB_HOST and (DB_HOST.startswith('192.168.') or DB_HOST.startswith('10.')))
+
+# エンジンの作成
+if is_local:
+    # ローカル環境ではSSL接続を無効化
+    logger.info("ローカル環境を検出しました。SSL接続を無効化します。")
+    engine = create_engine(
+        DATABASE_URL,
+        echo=False,  # SQLログを無効化（本番環境用）
+        pool_pre_ping=True,
+        pool_recycle=3600,
+        pool_size=10,  # 同時接続数を制限
+        max_overflow=20,  # 最大オーバーフロー接続数
+        pool_timeout=30  # 接続タイムアウト
+    )
+else:
+    # 本番環境ではSSL接続を有効化
+    logger.info("本番環境を検出しました。SSL接続を有効化します。")
+    ssl_cert = str(base_path / 'CombinedCACert.crt.pem')
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={
+            "ssl": {
+                "ssl_ca": ssl_cert
+            }  
+        },
+        echo=False,  # SQLログを無効化（本番環境用）
+        pool_pre_ping=True,
+        pool_recycle=3600,
+        pool_size=10,  # 同時接続数を制限
+        max_overflow=20,  # 最大オーバーフロー接続数
+        pool_timeout=30  # 接続タイムアウト
+    )
 
 # セッションファクトリを作成
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
