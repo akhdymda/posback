@@ -27,11 +27,14 @@ DB_NAME = os.getenv('DB_NAME')
 # DATABASE_URLを環境変数から取得、なければ個別変数から構築
 DATABASE_URL_ENV = os.getenv('DATABASE_URL')
 if DATABASE_URL_ENV:
+    logger.info("DATABASE_URL environment variable found.")
     if DATABASE_URL_ENV.startswith("postgresql://"):
         DATABASE_URL = DATABASE_URL_ENV.replace("postgresql://", "postgresql+psycopg2://", 1)
     else:
         DATABASE_URL = DATABASE_URL_ENV
 else:
+    logger.warning("DATABASE_URL environment variable not found. Falling back to individual DB variables.")
+    logger.info(f"DB_HOST value from environment: '{DB_HOST}'")
     DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # エンジンの作成
