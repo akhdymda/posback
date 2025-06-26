@@ -21,7 +21,18 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 
 # MySQLのURL構築
-DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+# DATABASE_URLを環境変数から取得、なければ個別変数から構築
+DATABASE_URL_ENV = os.getenv('DATABASE_URL')
+if DATABASE_URL_ENV:
+    if DATABASE_URL_ENV.startswith("postgresql://"):
+        DATABASE_URL = DATABASE_URL_ENV.replace("postgresql://", "postgresql+psycopg2://", 1)
+    else:
+        DATABASE_URL = DATABASE_URL_ENV
+else:
+    DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # エンジンの作成
 engine = create_engine(
