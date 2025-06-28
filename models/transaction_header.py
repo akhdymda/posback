@@ -4,7 +4,7 @@ from core.config import Base
 
 # 取引ヘッダテーブル
 class TransactionHeader(Base):
-    __tablename__ = "TRANSACTION_HEADER"
+    __tablename__ = "transaction_header"
 
     TRD_ID = Column(Integer, primary_key=True, index=True, autoincrement=True, comment="取引一意キー")
     DATETIME = Column(TIMESTAMP, nullable=False, server_default=func.now(), comment="取引日時")

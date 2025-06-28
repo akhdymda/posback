@@ -6,7 +6,7 @@ from core.config import Base # 共通Baseをインポート
 
 # 取引明細テーブル
 class TransactionDetail(Base):
-    __tablename__ = "TRANSACTION_DETAIL"
+    __tablename__ = "transaction_detail"
 
     TRD_ID = Column(Integer, primary_key=True, comment="取引一意キー")
     DTL_ID = Column(Integer, primary_key=True, comment="取引明細一意キー (TRD_ID内で連番)")

@@ -6,7 +6,7 @@ from core.config import Base # 共通Baseをインポート
 
 # 商品マスタテーブル
 class ProductMaster(Base):
-    __tablename__ = "PRODUCT_MASTER"
+    __tablename__ = "product_master"
 
     PRD_ID = Column(Integer, primary_key=True, index=True, autoincrement=True, comment="商品一意キー")
     CODE = Column(CHAR(16), unique=True, nullable=False, comment="商品JANコード（原則）")
