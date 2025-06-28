@@ -67,7 +67,7 @@ engine = create_engine(
 )
 
 # セッションファクトリを作成
-#SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Baseクラスの作成
 Base = declarative_base()
