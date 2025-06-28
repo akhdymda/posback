@@ -8,7 +8,7 @@ from core.config import Base # 共通Baseをインポート
 class ProductMaster(Base):
     __tablename__ = "product_master"
 
-    prd_id = Column("PRD_ID", Integer, primary_key=True, index=True, autoincrement=True, comment="商品一意キー")
-    code = Column("CODE", CHAR(16), unique=True, nullable=False, comment="商品JANコード（原則）")
-    name = Column("NAME", String(50), nullable=False, comment="商品名称")
-    price = Column("PRICE", Integer, nullable=False, comment="商品単価（税抜）")
+    prd_id = Column(Integer, primary_key=True, index=True, autoincrement=True, comment="商品一意キー")
+    code = Column(CHAR(16), unique=True, nullable=False, comment="商品JANコード（原則）")
+    name = Column(String(50), nullable=False, comment="商品名称")
+    price = Column(Integer, nullable=False, comment="商品単価（税抜）")
