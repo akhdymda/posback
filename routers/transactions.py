@@ -13,7 +13,7 @@ def create_new_transaction(transaction: TransactionCreate, db: Session = Depends
         header, total_amt, ttl_amt_ex_tax = crud_transaction.create_transaction(db, transaction_data=transaction)
         return {
             "success": True,
-            "trd_id": header.TRD_ID,
+            "trd_id": header.trd_id,
             "total_amt": total_amt,
             "ttl_amt_ex_tax": ttl_amt_ex_tax
         }

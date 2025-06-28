@@ -12,10 +12,10 @@ def get_product_by_code(db: Session, product_code: str):
         logger.info(f"商品コード '{product_code}' のデータベース検索を開始します")
         
         # まずSQLAlchemyのORMを使用して検索
-        product = db.query(ProductMaster).filter(ProductMaster.CODE == product_code).first()
+        product = db.query(ProductMaster).filter(ProductMaster.code == product_code).first()
         
         if product:
-            logger.info(f"商品コード '{product_code}' の商品を見つけました: {product.NAME}")
+            logger.info(f"商品コード '{product_code}' の商品を見つけました: {product.name}")
             return product
         
         # ORMで見つからない場合、直接SQLを試行
@@ -35,10 +35,10 @@ def get_product_by_code(db: Session, product_code: str):
             logger.info(f"直接SQLで商品コード '{product_code}' の商品を見つけました")
             # ProductMasterオブジェクトに変換
             product = ProductMaster(
-                PRD_ID=row.PRD_ID,
-                CODE=row.CODE,
-                NAME=row.NAME,
-                PRICE=row.PRICE
+                prd_id=row.prd_id,
+                code=row.code,
+                name=row.name,
+                price=row.price
             )
             return product
         

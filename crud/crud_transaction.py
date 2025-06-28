@@ -9,7 +9,7 @@ from .crud_product import get_product_by_code # crud_productから関数をイ�
 def create_transaction(db: Session, transaction_data: TransactionCreate):
     # 1. 取引テーブル (TRANSACTION_HEADER) へ登録
     db_transaction_header = TransactionHeader(
-        EMP_CD=transaction_data.emp_cd, # スキーマでデフォルト値設定済み
+        emp_cd=transaction_data.emp_cd, # スキーマでデフォルト値設定済み
         # DATETIMEはDB側で自動設定
         # STORE_CD, POS_NO はモデルのデフォルト値を使用
         # TOTAL_AMT, TTL_AMT_EX_TAX は後で更新
@@ -17,7 +17,7 @@ def create_transaction(db: Session, transaction_data: TransactionCreate):
     db.add(db_transaction_header)
     db.commit() # TRD_IDを採番するために一度コミット
     db.refresh(db_transaction_header)
-    trd_id = db_transaction_header.TRD_ID
+    trd_id = db_transaction_header.trd_id
 
     # 2. 取引明細テーブル (TRANSACTION_DETAIL) へ登録
     total_amt_ex_tax = 0
@@ -32,13 +32,13 @@ def create_transaction(db: Session, transaction_data: TransactionCreate):
             raise HTTPException(status_code=404, detail=f"Product with code {item.prd_code} not found in master.")
 
         db_transaction_detail = TransactionDetail(
-            TRD_ID=trd_id,
-            DTL_ID=dtl_id_counter,
-            PRD_ID=product_master_entry.PRD_ID, # 取得した正しいPRD_IDを使用
-            PRD_CODE=item.prd_code,
-            PRD_NAME=item.prd_name, # 本来はproduct_master_entry.NAMEを使用すべきだが、スキーマと合わせる
-            PRD_PRICE=item.prd_price, # 同上 product_master_entry.PRICE
-            QUANTITY=item.quantity,
+            trd_id=trd_id,
+            dtl_id=dtl_id_counter,
+            prd_id=product_master_entry.prd_id, # 取得した正しいPRD_IDを使用
+            prd_code=item.prd_code,
+            prd_name=item.prd_name, # 本来はproduct_master_entry.NAMEを使用すべきだが、スキーマと合わせる
+            prd_price=item.prd_price, # 同上 product_master_entry.PRICE
+            quantity=item.quantity,
             # TAX_CDはモデルのデフォルト値を使用
         )
         db.add(db_transaction_detail)
@@ -53,8 +53,8 @@ def create_transaction(db: Session, transaction_data: TransactionCreate):
     total_amt = total_amt_ex_tax + tax
 
     # 4. 取引テーブル (TRANSACTION_HEADER) を更新
-    db_transaction_header.TOTAL_AMT = total_amt
-    db_transaction_header.TTL_AMT_EX_TAX = total_amt_ex_tax
+    db_transaction_header.total_amt = total_amt
+    db_transaction_header.ttl_amt_ex_tax = total_amt_ex_tax
     db.commit()
     db.refresh(db_transaction_header)
 

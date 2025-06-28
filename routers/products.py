@@ -21,12 +21,12 @@ def read_product(product_code: str, db: Session = Depends(get_db)):
             logger.warning(f"商品コード '{product_code}' は見つかりませんでした")
             raise HTTPException(status_code=404, detail=f"商品コード '{product_code}' は見つかりませんでした")
         
-        logger.info(f"商品コード '{product_code}' の情報を正常に取得しました: {db_product.NAME}")
+        logger.info(f"商品コード '{product_code}' の情報を正常に取得しました: {db_product.name}")
         return Product(
-            prd_id=db_product.PRD_ID,
-            code=db_product.CODE,
-            name=db_product.NAME,
-            price=db_product.PRICE
+            prd_id=db_product.prd_id,
+            code=db_product.code,
+            name=db_product.name,
+            price=db_product.price
         )
     except HTTPException:
         raise
