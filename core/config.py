@@ -16,32 +16,6 @@ DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 
-# Connect to the database
-try:
-    connection = psycopg2.connect(
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT,
-        dbname=DB_NAME
-    )
-    print("Connection successful!")
-    
-    # Create a cursor to execute SQL queries
-    cursor = connection.cursor()
-    
-    # Example query
-    cursor.execute("SELECT NOW();")
-    result = cursor.fetchone()
-    print("Current Time:", result)
-
-    # Close the cursor and connection
-    cursor.close()
-    connection.close()
-    print("Connection closed.")
-
-except Exception as e:
-    print(f"Failed to connect: {e}")
 
 # ロギング設定
 #logger = logging.getLogger("db")
@@ -53,18 +27,26 @@ except Exception as e:
 
 
 # .envファイルの情報からデータベースURLを構築
-DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
 
 # エンジンの作成
 engine = create_engine(
-    DATABASE_URL,
-    echo=False,
-    pool_pre_ping=True,
-    pool_recycle=3600,
-    pool_size=10,
-    max_overflow=20,
-    pool_timeout=30
+    DATABASE_URL
+    #echo=False,
+    #pool_pre_ping=True,
+    #pool_recycle=3600,
+    #pool_size=10,
+    #max_overflow=20,
+    #pool_timeout=30
 )
+
+# データベース接続確認
+try:
+    with engine.connect() as connection:
+        print("データベース接続確認: 成功")
+except Exception as e:
+    print(f"データベース接続確認: 失敗 - {e}")
+
 
 # セッションファクトリを作成
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
